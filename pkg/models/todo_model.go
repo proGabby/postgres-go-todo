@@ -38,6 +38,7 @@ func (ts *TodoStore) GetTodosByUserID(userID int) ([]Todo, error) {
 		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Status); err != nil {
 			return nil, err
 		}
+		todo.UserID = userID
 		todos = append(todos, todo)
 	}
 
@@ -62,7 +63,7 @@ func (ts *TodoStore) CreateTodo(userID int, title, status string) (*Todo, error)
 	query := "INSERT INTO todos(title, status, user_id) VALUES($1, $2, $3) RETURNING id"
 	err := ts.DB.QueryRow(query, title, status, userID).Scan(&todoID)
 	if err != nil {
-		fmt.Println(err);
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -77,21 +78,22 @@ func (ts *TodoStore) CreateTodo(userID int, title, status string) (*Todo, error)
 }
 
 // UpdateTodo updates an existing todo in the database.
-func (ts *TodoStore) UpdateTodo(todoID int, title, status string) (*Todo, error) {
-	var updatedTodoID int
-	query := "UPDATE todos SET title = $2, status = $3 WHERE id = $1 RETURNING id"
-	err := ts.DB.QueryRow(query, todoID, title, status).Scan(&updatedTodoID)
+func (ts *TodoStore) UpdateTodo(todoID int, title, status string, userId int) (*Todo, error) {
+	var updatedTodo Todo
+	query := "UPDATE todos SET title = COALESCE(NULLIF($2, ''), title), status = COALESCE(NULLIF($3, ''), status) WHERE id = $1 RETURNING id, title, status"
+	err := ts.DB.QueryRow(query, todoID, title, status).Scan(&updatedTodo.ID, &updatedTodo.Title, &updatedTodo.Status)
 	if err != nil {
 		return nil, err
 	}
 
-	updatedTodo := &Todo{
-		ID:     updatedTodoID,
-		Title:  title,
-		Status: status,
+	newUpdatedTodo := &Todo{
+		ID:     updatedTodo.ID,
+		Title:  updatedTodo.Title,
+		Status: updatedTodo.Status,
+		UserID: userId,
 	}
 
-	return updatedTodo, nil
+	return newUpdatedTodo, nil
 }
 
 // DeleteTodo deletes a todo from the database.

@@ -42,9 +42,9 @@ func main() {
 	r.HandleFunc("/user/details", authMiddleware.Authenticate(userController.GetUserByToken)).Methods("GET")
 	r.HandleFunc("/todos", authMiddleware.Authenticate(todoController.GetTodosByUser)).Methods("GET")
 	r.HandleFunc("/todos", authMiddleware.Authenticate(todoController.CreateTodo)).Methods("POST")
-	// r.HandleFunc("/todos/{id}", authMiddleware.Authenticate(todoController.)).Methods("GET")
-	// r.HandleFunc("/todos/{id}", authMiddleware.Authenticate(permissionMiddleware.Authorize(todoController.))).Methods("PUT")
-	r.HandleFunc("/todos/{id}", authMiddleware.Authenticate(permissionMiddleware.Authorize(todoController.DeleteTodo))).Methods("DELETE")
+	r.HandleFunc("/todos/{id}", authMiddleware.Authenticate(todoController.GetSingleTodo)).Methods("GET")
+	r.HandleFunc("/todos/update", authMiddleware.Authenticate(permissionMiddleware.Authorize([]string{"user"}, todoController.UpdateTodo))).Methods("PUT")
+	r.HandleFunc("/todos", authMiddleware.Authenticate(permissionMiddleware.Authorize([]string{"admin"}, todoController.DeleteTodo))).Methods("DELETE")
 	fmt.Println("before listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

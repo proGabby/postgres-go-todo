@@ -13,6 +13,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/proGabby/simple_auth_todo_api/pkg/models"
+	"github.com/proGabby/simple_auth_todo_api/pkg/utils"
 )
 
 // AuthMiddleware handles user authentication.
@@ -34,7 +35,11 @@ func (m *AuthMiddleware) Authenticate(next http.HandlerFunc) http.HandlerFunc {
 		// Verify the token against the user store
 		user, err := m.verifyJWTToken(token)
 		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			jsonResponse := map[string]interface{}{
+				"error": "Unauthorized",
+			}
+
+			utils.HandleError(jsonResponse, http.StatusUnauthorized, w)
 			return
 		}
 
@@ -95,7 +100,7 @@ func (m *AuthMiddleware) verifyJWTToken(tokenString string) (*models.User, error
 
 	// Parse the token
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secretKey), nil 
+		return []byte(secretKey), nil
 	})
 	if err != nil {
 		return nil, err

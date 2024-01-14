@@ -22,13 +22,23 @@ To start the project, follow these steps:
    cd postgres-go-todo
    ```
 
-2. Initialize Go modules:
+2. Create a .env file in the project root and add the following environment variables:
+
+    ```env
+    JWT_SECRET_KEY=your_jwt_secret_key
+    DB_CONNECTION_STRING=your_db_connection_string
+    ```
+
+    Replace `your_jwt_secret_key` and `your_db_connection_string` with your preferred values.
+   
+
+3. Initialize Go modules:
 
    ```bash
    go mod init
    ```
 
-3. Run the main Go file:
+4. Run the main Go file:
 
    ```bash
    go run main.go

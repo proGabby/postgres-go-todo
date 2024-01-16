@@ -1,6 +1,6 @@
 module github.com/proGabby/simple_auth_todo_api
 
-go 1.21.5
+go 1.21.4
 
 require golang.org/x/crypto v0.18.0
 

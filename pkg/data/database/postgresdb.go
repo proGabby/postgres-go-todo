@@ -30,6 +30,7 @@ func InitDB() (*sql.DB, error) {
 	// Connect to the database
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
+		fmt.Print(err)
 		return nil, err
 	}
 

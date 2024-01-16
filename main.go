@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/proGabby/simple_auth_todo_api/pkg/controllers"
 	"github.com/proGabby/simple_auth_todo_api/pkg/data/database"
 	"github.com/proGabby/simple_auth_todo_api/pkg/middlewares"
@@ -14,6 +16,22 @@ import (
 )
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+		return
+	}
+
+	connStr, ok := os.LookupEnv("PORT")
+
+	if !ok {
+		log.Println("PORT variable not set")
+	}
+	if connStr == "" {
+		log.Fatal("PORT environment variable not set")
+	}
+
 	r := mux.NewRouter()
 
 	// Initialize the DB

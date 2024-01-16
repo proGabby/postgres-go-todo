@@ -20,7 +20,6 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
-		return
 	}
 
 	connStr, ok := os.LookupEnv("PORT")
